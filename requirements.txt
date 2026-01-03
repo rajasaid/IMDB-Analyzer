@@ -1,0 +1,17 @@
+datasets==4.4.2
+faiss-cpu==1.13.2
+httpx==0.28.1
+huggingface-hub==0.36.0
+numpy==2.4.0
+pandas==2.3.3
+peft==0.18.0
+protobuf==6.33.2
+regex==2025.11.3
+safetensors==0.7.0
+scikit-learn==1.8.0
+scipy==1.16.3
+sentence-transformers==5.2.0
+streamlit==1.52.2
+tokenizers==0.22.1
+torch==2.9.1
+transformers==4.57.3
