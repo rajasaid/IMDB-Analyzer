@@ -13,7 +13,7 @@ import sys
 ROOT = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
 if ROOT not in sys.path:
     sys.path.insert(0, ROOT)
-    
+
 # =====================================================================
 # INITIALIZATION SECTION (Runs once thanks to Streamlit caching)
 # =====================================================================
@@ -117,12 +117,13 @@ if "user_review" not in st.session_state:
 if st.session_state.stage == 1:
     st.subheader("Step 1 — Choose a Movie Title")
 
-    movie_title = st.text_input("Enter a movie title:")
+    movie_title = st.text_input("Enter a movie title:").strip()
 
     if st.button("Submit Title"):
         if loader.title_exists(movie_title):
             st.session_state.selected_title = movie_title
             st.session_state.stage = 2
+            st.rerun()
         else:
             st.error("❌ Movie not found in dataset. Please try another title.")
 
@@ -142,7 +143,7 @@ elif st.session_state.stage == 2:
         else:
             st.session_state.user_review = user_review
             st.session_state.stage = 3
-
+            st.rerun()
 
 # ----------------------------------------
 # STAGE 3 — SHOW RESULTS FROM RAG PIPELINE
@@ -181,3 +182,4 @@ elif st.session_state.stage == 3:
         st.session_state.stage = 1
         st.session_state.selected_title = None
         st.session_state.user_review = None
+        st.rerun()
