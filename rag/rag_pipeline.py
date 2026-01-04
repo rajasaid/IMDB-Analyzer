@@ -2,6 +2,7 @@
 
 from models.classifier import SentimentClassifier
 from models.generator import ResponseGenerator
+from models.image_generator import ImageGenerator
 from rag.embedder import ReviewEmbedder
 from rag.prompt_builder import PromptBuilder
 from rag.retriever import ReviewRetriever
@@ -14,7 +15,7 @@ class RAGPipeline:
     2. Embed user review
     3. Retrieve similar reviews for that movie
     4. Build prompt
-    5. Generate final response
+    5. Generate final response in text and Image
     """
 
     def __init__(
@@ -23,12 +24,14 @@ class RAGPipeline:
         embedder: ReviewEmbedder,
         retriever: ReviewRetriever,
         generator: ResponseGenerator,
+        image_generator: ImageGenerator,
         prompt_builder: PromptBuilder,
     ):
         self.classifier = classifier
         self.embedder = embedder
         self.retriever = retriever
         self.generator = generator
+        self.image_generator = image_generator
         self.prompt_builder = prompt_builder
 
     # -------------------------------------------------------------
@@ -61,8 +64,15 @@ class RAGPipeline:
             sentiment_label=sentiment_label,
             retrieved_reviews=retrieved_reviews,
         )
-
-        # 5. Generate response
+        # 5. Build image prompt
+        image_prompt = self.prompt_builder.build_image_prompt(
+            movie_title=movie_title,
+            user_review=user_review,
+            sentiment_label=sentiment_label,
+            retrieved_reviews=retrieved_reviews,
+        )
+        # 6. Generate responses
         response = self.generator.generate(prompt)
+        image = self.image_generator.generate(image_prompt, num_inference_steps=3)
 
-        return sentiment_text, retrieved_reviews, response
+        return sentiment_text, retrieved_reviews, response, image

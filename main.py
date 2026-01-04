@@ -4,7 +4,7 @@ from configs.training_config import TRAINING_CONFIG
 from configs.rag_config import RAG_CONFIG
 
 from data import IMDBDatasetLoader
-from models import SentimentClassifier, ResponseGenerator
+from models import SentimentClassifier, ResponseGenerator, ImageGenerator
 from rag import ReviewEmbedder, ReviewRetriever, PromptBuilder, RAGPipeline
 
 
@@ -78,11 +78,12 @@ def prepare_rag_components(reviews, titles):
         temperature=RAG_CONFIG["temperature"],
         top_p=RAG_CONFIG["top_p"],
     )
+    image_generator = ImageGenerator()
     prompt_builder = PromptBuilder()
 
     print("[main] Assembling RAG pipeline...")
     # Classifier will be passed in separately from caller
-    return embedder, retriever, generator, prompt_builder
+    return embedder, retriever, generator, image_generator, prompt_builder
 
 
 def cli_demo(pipeline, loader):
@@ -110,7 +111,7 @@ def cli_demo(pipeline, loader):
         return
 
     print("\n[CLI] Running pipeline...")
-    sentiment, retrieved_reviews, response = pipeline.run(
+    sentiment, retrieved_reviews, response, image = pipeline.run(
         movie_title=movie_title,
         user_review=user_review,
         top_k=RAG_CONFIG["top_k"],
@@ -124,9 +125,11 @@ def cli_demo(pipeline, loader):
     print("\nAssistant response:\n")
     print(response)
     print("\n=============================\n")
-
+    
+    image.show()
 
 def main():
+    
     # 1. Prepare data
     loader, reviews, titles = prepare_datasets()
 
@@ -140,7 +143,7 @@ def main():
     classifier = prepare_classifier(train_ds, eval_ds)
 
     # 4. Prepare RAG components
-    embedder, retriever, generator, prompt_builder = prepare_rag_components(
+    embedder, retriever, generator, image_generator, prompt_builder = prepare_rag_components(
         reviews, titles
     )
 
@@ -150,6 +153,7 @@ def main():
         embedder=embedder,
         retriever=retriever,
         generator=generator,
+        image_generator=image_generator,
         prompt_builder=prompt_builder,
     )
 

@@ -2,4 +2,5 @@
 
 from .classifier import SentimentClassifier
 from .generator import ResponseGenerator
-__all__ = ["SentimentClassifier", "ResponseGenerator"]
+from .image_generator import ImageGenerator
+__all__ = ["SentimentClassifier", "ResponseGenerator", "ImageGenerator"]

@@ -3,7 +3,7 @@
 import streamlit as st
 import os
 from data import IMDBDatasetLoader
-from models import SentimentClassifier, ResponseGenerator
+from models import SentimentClassifier, ResponseGenerator, ImageGenerator
 from rag import ReviewEmbedder, ReviewRetriever, PromptBuilder, RAGPipeline
 from configs.rag_config import RAG_CONFIG
 from configs.training_config import TRAINING_CONFIG
@@ -75,14 +75,16 @@ def load_models():
         temperature=RAG_CONFIG["temperature"],
         top_p=RAG_CONFIG["top_p"],
     )
+    image_generator = ImageGenerator()
+    
     prompt_builder = PromptBuilder()
 
-    return classifier, generator, prompt_builder
+    return classifier, generator, image_generator, prompt_builder
 
 
 # Load everything
 loader, embedder, retriever = load_data_and_embeddings()
-classifier, generator, prompt_builder = load_models()
+classifier, generator, image_generator, prompt_builder = load_models()
 
 # Build the RAG pipeline
 pipeline = RAGPipeline(
@@ -90,6 +92,7 @@ pipeline = RAGPipeline(
     embedder=embedder,
     retriever=retriever,
     generator=generator,
+    image_generator=image_generator,
     prompt_builder=prompt_builder
 )
 
@@ -156,7 +159,7 @@ elif st.session_state.stage == 3:
     user_review = st.session_state.user_review
 
     with st.spinner("Running sentiment analysis + retrieval + generation..."):
-        sentiment, retrieved_reviews, response = pipeline.run(
+        sentiment, retrieved_reviews, response, image = pipeline.run(
             movie_title=movie_title,
             user_review=user_review,
             top_k=RAG_CONFIG["top_k"]
@@ -177,6 +180,13 @@ elif st.session_state.stage == 3:
     st.markdown("### 🤖 Assistant Response:")
     st.write(response)
 
+    # Display generated image
+    st.markdown("### 🖼️ Generated Image:")
+    if image is not None:
+        st.image(image, caption="Generated Image based on your review", use_column_width=True)
+    else:
+        st.write("No image generated.")
+        
     # Option to restart
     if st.button("Analyze Another Review"):
         st.session_state.stage = 1
