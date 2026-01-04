@@ -59,3 +59,35 @@ Response:
 """
 
         return prompt.strip()
+
+    def build_image_prompt(
+        self,
+        movie_title: str,
+        user_review: str,
+        sentiment_label: int,
+        retrieved_reviews: list,
+    ):
+        """
+        Constructs a prompt for the image generation model.
+
+        sentiment_label: 0 = negative, 1 = positive
+        retrieved_reviews: list[str] of similar reviews
+        """
+
+        sentiment_text = "positive" if sentiment_label == 1 else "negative"
+
+        image_prompt = f"""
+Create an image prompt for a movie review assistant.
+The user has selected the movie: "{movie_title}".
+
+User sentiment: {sentiment_text}
+User review: "{user_review}"
+
+Here are some related reviews from other users about this movie:
+{retrieved_reviews}
+
+Based on the above context, generate a detailed and creative image prompt
+that captures the essence of the user's opinion and the movie's theme.
+Your prompt should be suitable for an image generation model.
+"""
+        return image_prompt.strip()
