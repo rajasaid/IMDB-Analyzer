@@ -9,7 +9,8 @@ A Streamlit UI guides the user through:
 3. Receiving:  
    - Sentiment classification  
    - Retrieved similar IMDB reviews  
-   - A contextual AI-generated response  
+   - A contextual AI-generated response
+   - an AI generated image illustrating the movie and the review. 
 
 ---
 
@@ -157,6 +158,7 @@ The RAG pipeline performs:
    - Sentiment  
    - Retrieved context  
 5. **Generation using Microsoft Phi-2**
+6. **Generation of Image using sdxl-turbo model**
 
 All logic is encapsulated in:
 
@@ -174,6 +176,7 @@ from imdb_analyzer.rag import RAGPipeline
 | Embeddings | Sentence Transformers |
 | Vector Search | FAISS |
 | Generator | Microsoft Phi-2 |
+| Image Generator | SDXL-Turbo |
 | UI | Streamlit |
 | Dataset | IMDB Reviews |
 
@@ -199,14 +202,6 @@ Using the above context, generate a coherent, friendly response.
 
 ## 🛠️ Troubleshooting
 
-### ❌ ModuleNotFoundError: No module named 'data'
-Run Streamlit from the project root:
-
-```bash
-python -m streamlit run imdb_analyzer/ui/app.py
-```
-
-Ensure the folder structure matches this README.
 
 ### ❌ MPS device / Apple Silicon errors
 Sentiment classifier is forced to run on CPU to avoid PyTorch MPS bugs.
